@@ -14,15 +14,23 @@
     <header class="bg-gray-800 shadow-lg sticky top-0 z-40">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="#" data-page="home-page" class="text-2xl font-bold text-yellow-400">DonghuaFast</a>
-            <div class="flex items-center space-x-4">
-                <div id="search-container" class="relative">
-                    <button id="search-btn" class="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-white text-lg">
-                        <i class="fa fa-search"></i>
-                    </button>
-                    <div id="search-popup" class="absolute right-0 top-full mt-2 hidden bg-gray-800 p-2 rounded-lg shadow-lg z-10 w-64 sm:w-72">
-                         <input id="search-input" type="text" placeholder="Search..." class="bg-gray-700 text-white rounded-md py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                         <div id="search-results" class="mt-2 max-h-80 overflow-y-auto"></div>
-                    </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden lg:flex items-center space-x-6">
+                <a href="#" data-page="home-page" class="text-gray-300 hover:text-yellow-400 font-semibold transition duration-300">Home</a>
+                <a href="#" data-page="donghua-page" class="text-gray-300 hover:text-yellow-400 font-semibold transition duration-300">Donghua</a>
+                <a href="#" data-page="movie-page" class="text-gray-300 hover:text-yellow-400 font-semibold transition duration-300">Movies</a>
+                <a href="#" data-page="genre-page" class="text-gray-300 hover:text-yellow-400 font-semibold transition duration-300">Genres</a>
+                <a href="#" data-page="schedule-page" class="text-gray-300 hover:text-yellow-400 font-semibold transition duration-300">Schedule</a>
+            </nav>
+
+            <div id="search-container" class="relative">
+                <button id="search-btn" class="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-white text-lg">
+                    <i class="fa fa-search"></i>
+                </button>
+                <div id="search-popup" class="absolute right-0 top-full mt-2 hidden bg-gray-800 p-2 rounded-lg shadow-lg z-10 w-64 sm:w-72">
+                     <input id="search-input" type="text" placeholder="Search..." class="bg-gray-700 text-white rounded-md py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                     <div id="search-results" class="mt-2 max-h-80 overflow-y-auto"></div>
                 </div>
             </div>
         </div>
@@ -30,7 +38,7 @@
 
     <!-- Main Content Area -->
     <div id="home-page" class="page-content">
-        <section id="popular-slider-section" class="relative h-64 md:h-96 mb-8 -mt-1">
+        <section id="popular-slider-section" class="relative h-60 md:h-96 mb-8 -mt-1">
             <div id="popular-slider" class="relative w-full h-full overflow-hidden">
                 <!-- JS dynamic slides -->
             </div>
@@ -42,13 +50,13 @@
                 <div class="flex-grow">
                     <section class="mb-12">
                         <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Recently Updated</h2>
-                        <div id="latest-episodes-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        <div id="latest-episodes-grid" class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-4">
                             <!-- JS dynamic content -->
                         </div>
                     </section>
                     <section class="mb-12">
                         <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Popular Donghua</h2>
-                        <div id="popular-donghua-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        <div id="popular-donghua-grid" class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-4">
                             <!-- JS dynamic content -->
                         </div>
                     </section>
@@ -61,7 +69,7 @@
                         </ul>
                     </div>
                     <div class="bg-gray-800 p-6 rounded-lg shadow-lg mt-8">
-                        <h3 class="text-xl font-bold border-l-4 border-yellow-400 pl-4 mb-4">Genres</h3>
+                        <h3 class="text-xl font-bold border-l-4 border-yellow-400 pl-5 mb-4">Genres</h3>
                         <div id="genres-list" class="flex flex-wrap gap-2">
                             <!-- JS dynamic content -->
                         </div>
@@ -75,7 +83,7 @@
         <main class="container mx-auto px-4 py-8">
             <section>
                 <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Donghua (TV Series)</h2>
-                <div id="donghua-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                <div id="donghua-grid" class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-4">
                     <!-- JS dynamic content -->
                 </div>
             </section>
@@ -86,7 +94,7 @@
         <main class="container mx-auto px-4 py-8">
             <section>
                 <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Movies</h2>
-                <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                <div id="movie-grid" class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-4">
                     <!-- JS dynamic content -->
                 </div>
             </section>

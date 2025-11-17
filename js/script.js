@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const pages = document.querySelectorAll('.page-content');
     const mobileNavLinks = document.querySelectorAll('nav.lg\\:hidden a[data-page]');
+    const desktopNavLinks = document.querySelectorAll('nav.lg\\:flex a[data-page]');
 
     function showPage(pageId) {
         pages.forEach(page => {
@@ -88,6 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
             link.classList.add('text-gray-400');
             if (link.dataset.page === pageId) {
                 link.classList.add('text-yellow-400', 'font-bold');
+                link.classList.remove('text-gray-400');
+            }
+        });
+
+        desktopNavLinks.forEach(link => {
+            link.classList.remove('text-yellow-400');
+            link.classList.add('text-gray-300');
+            if (link.dataset.page === pageId) {
+                link.classList.add('text-yellow-400');
+                link.classList.remove('text-gray-300');
             }
         });
     }
@@ -126,26 +137,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const createDonghuaCard = (item, isLatest = false) => {
-        let episodeText = '';
-        if (isLatest && item.episodes && item.episodes.length > 0) {
-            // Find the highest episode number
+        let typeTagHtml = '';
+
+        if (item.type === 'TV Series' && item.episodes && item.episodes.length > 0) {
             const latestEp = Math.max(...item.episodes.map(ep => ep.number));
-            episodeText = `<p class="text-xs text-gray-400">Episode ${latestEp}</p>`;
+            typeTagHtml = `<div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-md">${latestEp}</div>`;
         } else if (item.type === 'Movie') {
-             episodeText = `<p class="text-xs text-gray-400">Movie</p>`;
-        } else {
-             episodeText = `<p class="text-xs text-gray-400">${item.episodes?.length || 0} Episodes</p>`;
+            typeTagHtml = `<div class="absolute top-2 right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-md">Movie</div>`;
         }
 
         return `
-        <a href="#" data-page="detail-page" data-id="${item.id}" class="block relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
-            <img src="${item.poster}" alt="${item.title}" class="w-full h-56 md:h-60 object-cover">
-            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
-                <h3 class="font-bold text-sm truncate text-white">${item.title}</h3>
-                ${episodeText}
-            </div>
-        </a>
-    `};
+            <a href="#" data-page="detail-page" data-id="${item.id}" class="block relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                <img src="${item.poster}" alt="${item.title}" class="w-full h-36 md:h-48 object-cover">
+                ${typeTagHtml}
+                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                    <h3 class="font-bold text-xs text-white">${item.title}</h3>
+                    
+                </div>
+            </a>
+        `;
+    };
 
     const populateLatestEpisodes = (items) => {
         const container = document.getElementById('latest-episodes-grid');
@@ -364,8 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         container.innerHTML = `
             <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/3">
-                    <img src="${item.poster}" alt="${item.title}" class="w-full rounded-lg shadow-lg">
+                <div class="md:w-1/3 flex-shrink-0">
+                    <img src="${item.poster}" alt="${item.title}" class="w-full h-72 object-cover rounded-lg shadow-lg">
                 </div>
                 <div class="md:w-2/3">
                     <h2 class="text-4xl font-bold text-yellow-400 mb-2">${item.title}</h2>
@@ -394,12 +405,14 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = `
             <div class="flex flex-col lg:flex-row gap-8">
                 <div class="lg:w-2/3">
-                    <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden shadow-lg">
-                        <iframe src="${episode.url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
-                    </div>
-                    <div class="mt-6">
-                        <h2 class="text-3xl font-bold">${item.title}</h2>
-                        <h3 class="text-xl text-yellow-400 mt-1">EP ${episode.number}/${highestEpisode} - ${episode.title}</h3>
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <div class="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
+                            <iframe src="${episode.url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+                        </div>
+                        <div class="mt-4">
+                            <h2 class="text-3xl font-bold">${item.title}</h2>
+                            <h3 class="text-xl text-yellow-400 mt-1">EP ${episode.number}/${highestEpisode} - ${episode.title}</h3>
+                        </div>
                     </div>
                 </div>
                 <div class="lg:w-1/3 bg-gray-800 p-4 rounded-lg">
