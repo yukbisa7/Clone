@@ -19,8 +19,9 @@
                     <button id="search-btn" class="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-white text-lg">
                         <i class="fa fa-search"></i>
                     </button>
-                    <div id="search-popup" class="absolute right-0 top-full mt-2 hidden bg-gray-800 p-2 rounded-lg shadow-lg z-10">
-                         <input id="search-input" type="text" placeholder="Search..." class="bg-gray-700 text-white rounded-md py-2 px-4 w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <div id="search-popup" class="absolute right-0 top-full mt-2 hidden bg-gray-800 p-2 rounded-lg shadow-lg z-10 w-64 sm:w-72">
+                         <input id="search-input" type="text" placeholder="Search..." class="bg-gray-700 text-white rounded-md py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                         <div id="search-results" class="mt-2 max-h-80 overflow-y-auto"></div>
                     </div>
                 </div>
             </div>
@@ -29,7 +30,14 @@
 
     <!-- Main Content Area -->
     <div id="home-page" class="page-content">
-        <main class="container mx-auto px-4 py-8">
+        <section id="popular-slider-section" class="relative h-64 md:h-96 mb-8 -mt-1">
+            <div id="popular-slider" class="relative w-full h-full overflow-hidden">
+                <!-- JS dynamic slides -->
+            </div>
+            <button id="slider-prev" class="absolute top-1/2 left-2 md:left-4 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full h-10 w-10 flex items-center justify-center transition"><i class="fa fa-chevron-left"></i></button>
+            <button id="slider-next" class="absolute top-1/2 right-2 md:right-4 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white rounded-full h-10 w-10 flex items-center justify-center transition"><i class="fa fa-chevron-right"></i></button>
+        </section>
+        <main class="container mx-auto px-4 pb-8">
             <div class="flex flex-col lg:flex-row gap-8">
                 <div class="flex-grow">
                     <section class="mb-12">
@@ -86,22 +94,17 @@
     </div>
 
     <div id="genre-page" class="page-content hidden">
-        <main class="container mx-auto px-4 py-8">
-            <section>
-                <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Genre</h2>
-                <div class="text-center py-20">
-                    <p class="text-gray-400 text-lg">Genre browsing is coming soon!</p>
-                </div>
-            </section>
+        <main id="genre-page-content" class="container mx-auto px-4 py-8">
+             <!-- JS dynamic content for genres -->
         </main>
     </div>
 
     <div id="schedule-page" class="page-content hidden">
         <main class="container mx-auto px-4 py-8">
             <section>
-                <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Schedule</h2>
-                <div class="text-center py-20">
-                    <p class="text-gray-400 text-lg">Content for the Schedule page is coming soon!</p>
+                <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Weekly Schedule</h2>
+                <div id="schedule-container">
+                    <!-- JS dynamic content -->
                 </div>
             </section>
         </main>

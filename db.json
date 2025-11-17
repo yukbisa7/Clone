@@ -9,6 +9,7 @@
       "type": "TV Series",
       "rating": 9.2,
       "isPopular": true,
+      "isTopRated": true,
       "updatedAt": "2024-04-21T11:00:00.000Z",
       "episodes": [
         { "number": 156, "title": "Heavenly Passage", "url": "https://www.youtube.com/embed/dQw4w9WgXcQ" },
@@ -24,6 +25,7 @@
       "type": "TV Series",
       "rating": 9.5,
       "isPopular": true,
+      "isTopRated": true,
       "updatedAt": "2024-04-21T10:00:00.000Z",
       "episodes": [
         { "number": 120, "title": "The Flame's Power", "url": "https://www.youtube.com/embed/dQw4w9WgXcQ" },
@@ -39,6 +41,7 @@
       "type": "TV Series",
       "rating": 8.9,
       "isPopular": true,
+      "isTopRated": false,
       "updatedAt": "2024-04-20T12:00:00.000Z",
       "episodes": [
         { "number": 263, "title": "The Final Battle", "url": "https://www.youtube.com/embed/dQw4w9WgXcQ" }
@@ -53,6 +56,7 @@
       "type": "Movie",
       "rating": 9.1,
       "isPopular": false,
+      "isTopRated": true,
       "updatedAt": "2024-04-20T10:00:00.000Z",
       "episodes": [
         { "number": 1, "title": "Movie Part 1", "url": "https://www.youtube.com/embed/dQw4w9WgXcQ" }
@@ -67,6 +71,7 @@
       "type": "TV Series",
        "rating": 8.5,
       "isPopular": false,
+      "isTopRated": false,
       "updatedAt": "2024-04-19T10:00:00.000Z",
       "episodes": []
     },
@@ -79,6 +84,7 @@
       "type": "TV Series",
        "rating": 8.7,
       "isPopular": true,
+      "isTopRated": false,
       "updatedAt": "2024-04-18T10:00:00.000Z",
       "episodes": []
     },
@@ -91,6 +97,7 @@
       "type": "TV Series",
        "rating": 8.8,
       "isPopular": false,
+      "isTopRated": false,
       "updatedAt": "2024-04-17T10:00:00.000Z",
       "episodes": []
     },
@@ -103,6 +110,7 @@
       "type": "TV Series",
        "rating": 9.0,
       "isPopular": true,
+      "isTopRated": true,
       "updatedAt": "2024-04-16T10:00:00.000Z",
       "episodes": []
     }
@@ -116,5 +124,25 @@
     { "id": 6, "name": "Cultivation" },
     { "id": 7, "name": "Sci-Fi" },
     { "id": 8, "name": "Mystery" }
+  ],
+  "schedule": [
+    {
+      "id": 1651508400000,
+      "donghuaId": 2,
+      "day": "Saturday",
+      "time": "10:00"
+    },
+    {
+      "id": 1651594800000,
+      "donghuaId": 1,
+      "day": "Sunday",
+      "time": "10:00"
+    },
+    {
+      "id": 1651681200000,
+      "donghuaId": 7,
+      "day": "Tuesday",
+      "time": "10:00"
+    }
   ]
 }

@@ -6,21 +6,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const searchPopup = document.getElementById('search-popup');
     const searchContainer = document.getElementById('search-container');
+    const searchResultsContainer = document.getElementById('search-results');
 
-    if (searchBtn && searchInput && searchPopup && searchContainer) {
+    const handleSearch = () => {
+        if (!dbData.allDonghua) return; // Guard against data not being loaded yet
+        
+        const searchTerm = searchInput.value.toLowerCase().trim();
+
+        if (searchTerm.length < 2) {
+            searchResultsContainer.innerHTML = '';
+            return;
+        }
+
+        const results = dbData.allDonghua.filter(item => 
+            item.title.toLowerCase().includes(searchTerm)
+        );
+
+        if (results.length === 0) {
+            searchResultsContainer.innerHTML = '<p class="text-gray-400 p-2 text-center">No results found.</p>';
+            return;
+        }
+
+        searchResultsContainer.innerHTML = results.map(item => `
+            <a href="#" data-page="detail-page" data-id="${item.id}" class="search-result-item flex items-center space-x-3 p-2 hover:bg-gray-700 rounded transition-colors duration-200 w-full">
+                <img src="${item.poster}" alt="${item.title}" class="w-10 h-14 object-cover rounded">
+                <div>
+                    <p class="font-semibold text-sm line-clamp-2">${item.title}</p>
+                    <p class="text-xs text-gray-400">${item.type}</p>
+                </div>
+            </a>
+        `).join('');
+    };
+
+    if (searchBtn && searchInput && searchPopup && searchContainer && searchResultsContainer) {
         searchBtn.addEventListener('click', (event) => {
             event.stopPropagation();
             searchPopup.classList.toggle('hidden');
             if (!searchPopup.classList.contains('hidden')) {
                 searchInput.focus();
+            } else {
+                searchInput.value = ''; // Clear search on close
+                searchResultsContainer.innerHTML = '';
             }
         });
-
+        
         document.addEventListener('click', (event) => {
             if (!searchContainer.contains(event.target) && !searchPopup.classList.contains('hidden')) {
                 searchPopup.classList.add('hidden');
+                searchInput.value = '';
+                searchResultsContainer.innerHTML = '';
             }
         });
+
+        searchPopup.addEventListener('click', (event) => {
+            if (event.target.closest('.search-result-item')) {
+                 searchPopup.classList.add('hidden');
+                 searchInput.value = '';
+                 searchResultsContainer.innerHTML = '';
+            }
+        });
+        
+        searchInput.addEventListener('input', handleSearch);
     }
 
     const pages = document.querySelectorAll('.page-content');
@@ -48,17 +94,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadContent = async () => {
         try {
-            const response = await fetch('./db.json');
-            if (!response.ok) throw new Error('Network response was not ok');
-            dbData = await response.json();
+            const localData = localStorage.getItem('donghuaDB');
+            if (localData) {
+                console.log('Loading data from localStorage for main site.');
+                dbData = JSON.parse(localData);
+            } else {
+                console.log('Fetching initial data from db.json for main site.');
+                const response = await fetch('./db.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                dbData = await response.json();
+                localStorage.setItem('donghuaDB', JSON.stringify(dbData)); // Save initial fetch
+            }
             
             // Sort all donghua by last updated date
             dbData.allDonghua.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
+            populatePopularSlider(dbData.allDonghua.filter(item => item.isPopular));
             populateLatestEpisodes(dbData.allDonghua);
             populatePopularDonghua(dbData.allDonghua.filter(item => item.isPopular));
             populateSidebarPopular(dbData.allDonghua);
             populateGenres(dbData.genres);
+            populateSchedulePage(dbData.schedule, dbData.allDonghua);
 
             // Populate main content pages
             populateDonghuaPage(dbData.allDonghua.filter(item => item.type === 'TV Series'));
@@ -107,9 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const populateSidebarPopular = (items) => {
         const container = document.getElementById('sidebar-popular-list');
         if (!container) return;
-        // Sort by rating for sidebar
-        const sortedByRating = [...items].sort((a,b) => (b.rating || 0) - (a.rating || 0));
-        container.innerHTML = sortedByRating.slice(0, 5).map(item => `
+        const topRatedItems = items.filter(item => item.isTopRated);
+        container.innerHTML = topRatedItems.slice(0, 5).map(item => `
             <li class="flex items-center space-x-4 hover:bg-gray-700 p-2 rounded">
                 <img src="${item.poster}" alt="${item.title}" class="w-12 h-16 object-cover rounded">
                 <div>
@@ -124,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('genres-list');
         if (!container) return;
         container.innerHTML = items.map(item => `
-            <a href="#" data-page="genre-page" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">${item.name}</a>
+            <a href="#" data-page="genre-page" data-genre="${item.name}" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">${item.name}</a>
         `).join('');
     };
 
@@ -140,23 +195,174 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = items.map(item => createDonghuaCard(item)).join('');
     };
 
+    const populatePopularSlider = (items) => {
+        const slider = document.getElementById('popular-slider');
+        const prevBtn = document.getElementById('slider-prev');
+        const nextBtn = document.getElementById('slider-next');
+        if (!slider || !prevBtn || !nextBtn || items.length === 0) return;
+
+        slider.innerHTML = items.map((item, index) => `
+            <div class="slider-item absolute inset-0 w-full h-full ${index === 0 ? 'opacity-100' : 'opacity-0'}">
+                <img src="${item.poster}" class="w-full h-full object-cover" alt="${item.title}">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-8">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">${item.title}</h2>
+                    <p class="text-gray-300 md:text-lg hidden md:block max-w-2xl truncate">${item.synopsis}</p>
+                    <a href="#" data-page="detail-page" data-id="${item.id}" class="mt-4 inline-block bg-yellow-400 text-gray-900 font-bold py-2 px-5 rounded-lg hover:bg-yellow-500">Watch Now</a>
+                </div>
+            </div>
+        `).join('');
+
+        let currentIndex = 0;
+        const slides = slider.querySelectorAll('.slider-item');
+        const slideCount = slides.length;
+
+        const showSlide = (index) => {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('opacity-100', i === index);
+                slide.classList.toggle('opacity-0', i !== index);
+            });
+        };
+
+        const next = () => {
+            currentIndex = (currentIndex + 1) % slideCount;
+            showSlide(currentIndex);
+        };
+
+        const prev = () => {
+            currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+            showSlide(currentIndex);
+        };
+
+        nextBtn.addEventListener('click', next);
+        prevBtn.addEventListener('click', prev);
+        setInterval(next, 5000); // Auto-slide every 5 seconds
+    };
+    
+    const populateSchedulePage = (schedule, allDonghua) => {
+        const container = document.getElementById('schedule-container');
+        if (!container || !schedule) return;
+        
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const groupedByDay = daysOfWeek.reduce((acc, day) => {
+            acc[day] = schedule.filter(item => item.day === day);
+            return acc;
+        }, {});
+
+        let html = '';
+        for(const day of daysOfWeek) {
+            const items = groupedByDay[day];
+            if (items.length > 0) {
+                html += `<h3 class="text-2xl font-bold text-yellow-400 mt-8 mb-4">${day}</h3>`;
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+                html += items.map(item => {
+                    const donghua = allDonghua.find(d => d.id === item.donghuaId);
+                    if (!donghua) return '';
+                    return `
+                        <a href="#" data-page="detail-page" data-id="${donghua.id}" class="flex items-center bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300">
+                            <img src="${donghua.poster}" alt="${donghua.title}" class="w-16 h-24 object-cover rounded-md mr-4">
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-lg">${donghua.title}</h4>
+                                <p class="text-yellow-400 font-semibold">${item.time}</p>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                html += '</div>';
+            }
+        }
+
+        if (html === '') {
+            container.innerHTML = '<p class="text-gray-400 text-lg text-center py-20">The schedule is currently empty.</p>';
+        } else {
+            container.innerHTML = html;
+        }
+    };
+
+    const createEpisodeSelector = (item, currentEpisodeNumber = null) => {
+        if (!item.episodes || item.episodes.length === 0) {
+            return ''; // Hide section if no episodes
+        }
+
+        const sortedEpisodes = [...item.episodes].sort((a, b) => a.number - b.number);
+        const lastEp = sortedEpisodes[sortedEpisodes.length - 1].number;
+        const episodesPerPage = 20;
+
+        let activeRangeStart;
+        if (currentEpisodeNumber) {
+            activeRangeStart = Math.floor((currentEpisodeNumber - 1) / episodesPerPage) * episodesPerPage + 1;
+        } else {
+            // Default to the range containing the latest episode if no specific episode is selected
+            activeRangeStart = Math.floor((lastEp - 1) / episodesPerPage) * episodesPerPage + 1;
+        }
+
+        let rangeTabsHtml = '';
+        let episodeGridsHtml = '';
+        
+        for (let i = 0; i < lastEp; i += episodesPerPage) {
+            const start = i + 1;
+            const end = i + episodesPerPage;
+
+            const episodesInRange = sortedEpisodes.filter(ep => ep.number >= start && ep.number <= end);
+            
+            if (episodesInRange.length > 0) {
+                const isActive = start === activeRangeStart;
+                const rangeLabel = `${start}-${end}`;
+
+                rangeTabsHtml += `
+                    <button data-range-start="${start}" class="episode-range-tab px-3 py-2 text-sm font-semibold whitespace-nowrap ${isActive ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-yellow-300'}">
+                        ${rangeLabel}
+                    </button>
+                `;
+
+                const gridItems = episodesInRange.map(ep => {
+                    const isCurrent = ep.number === currentEpisodeNumber;
+                    return `
+                        <a href="#" data-page="player-page" data-id="${item.id}" data-episode="${ep.number}" 
+                           class="flex items-center justify-center p-2 h-10 rounded-md transition duration-200 text-center text-sm
+                                  ${isCurrent ? 'bg-yellow-400 text-gray-900 font-bold' : 'bg-gray-700 hover:bg-yellow-500 hover:text-gray-900'}">
+                            ${ep.number}
+                        </a>
+                    `;
+                }).join('');
+
+                episodeGridsHtml += `
+                    <div data-grid-range-start="${start}" class="episode-grid grid grid-cols-4 sm:grid-cols-5 gap-2 ${isActive ? '' : 'hidden'}">
+                        ${gridItems}
+                    </div>
+                `;
+            }
+        }
+        
+        const totalEpCount = sortedEpisodes.length;
+        
+        if (rangeTabsHtml === '') {
+            return '';
+        }
+
+        return `
+            <div class="episode-selector-container mt-6">
+                <div class="flex items-center mb-4">
+                    <h3 class="text-xl font-bold border-l-4 border-yellow-400 pl-4">Episodes (${totalEpCount})</h3>
+                </div>
+                <div class="flex overflow-x-auto scrolling-touch border-b border-gray-700 mb-4">
+                    ${rangeTabsHtml}
+                </div>
+                <div class="episode-grids-container">
+                    ${episodeGridsHtml}
+                </div>
+            </div>
+        `;
+    };
+
     const renderDetailPage = (id) => {
         const item = dbData.allDonghua.find(d => d.id === id);
         if (!item) return;
         const container = document.getElementById('detail-page-content');
         
-        // Sort episodes by number, highest first
-        const sortedEpisodes = item.episodes ? [...item.episodes].sort((a, b) => b.number - a.number) : [];
-
-        const episodeListHtml = sortedEpisodes.map(ep => `
-            <a href="#" data-page="player-page" data-id="${item.id}" data-episode="${ep.number}" class="block p-3 bg-gray-700 hover:bg-yellow-500 hover:text-gray-900 rounded transition duration-200">
-                Episode ${ep.number} - ${ep.title}
-            </a>`).join('');
+        const episodeSelectorHtml = createEpisodeSelector(item);
 
         container.innerHTML = `
-            <div class="mb-4">
-                <button data-page="home-page" class="bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded hover:bg-yellow-500"><i class="fa fa-arrow-left mr-2"></i>Back</button>
-            </div>
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="md:w-1/3">
                     <img src="${item.poster}" alt="${item.title}" class="w-full rounded-lg shadow-lg">
@@ -168,8 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${item.genres.map(g => `<span class="bg-gray-700 text-xs py-1 px-3 rounded-full">${g}</span>`).join('')}
                     </div>
                     <p class="text-gray-300 mb-6">${item.synopsis}</p>
-                    <h3 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-4">Episodes</h3>
-                    <div class="max-h-96 overflow-y-auto space-y-2 pr-2">${episodeListHtml || '<p class=\"text-gray-400\">No episodes available yet.</p>'}</div>
+                    ${episodeSelectorHtml}
                 </div>
             </div>
         `;
@@ -183,36 +388,120 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!episode) return;
         const container = document.getElementById('player-page-content');
 
+        const episodeSelectorHtml = createEpisodeSelector(item, episodeNumber);
+        const highestEpisode = item.episodes.reduce((max, ep) => ep.number > max ? ep.number : max, 0);
+
         container.innerHTML = `
-            <div class="mb-4">
-                 <button data-page="detail-page" data-id="${id}" class="bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded hover:bg-yellow-500"><i class="fa fa-arrow-left mr-2"></i>Back to Episodes</button>
-            </div>
-            <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden shadow-lg">
-                 <iframe src="${episode.url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
-            </div>
-            <div class="mt-6">
-                <h2 class="text-3xl font-bold">${item.title}</h2>
-                <h3 class="text-xl text-yellow-400">Episode ${episode.number}: ${episode.title}</h3>
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-2/3">
+                    <div class="aspect-w-16 aspect-h-9 bg-black rounded-lg overflow-hidden shadow-lg">
+                        <iframe src="${episode.url}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+                    </div>
+                    <div class="mt-6">
+                        <h2 class="text-3xl font-bold">${item.title}</h2>
+                        <h3 class="text-xl text-yellow-400 mt-1">EP ${episode.number}/${highestEpisode} - ${episode.title}</h3>
+                    </div>
+                </div>
+                <div class="lg:w-1/3 bg-gray-800 p-4 rounded-lg">
+                    ${episodeSelectorHtml}
+                </div>
             </div>
         `;
         showPage('player-page');
-    }
+    };
 
-    document.body.addEventListener('click', (e) => {
-        const link = e.target.closest('a[data-page], button[data-page]');
-        if (!link) return;
+    const renderAllGenresPage = () => {
+        const container = document.getElementById('genre-page-content');
+        if(!container) return;
+
+        const allGenresHtml = dbData.genres.map(item => `
+            <a href="#" data-page="genre-page" data-genre="${item.name}" class="block text-center bg-gray-800 p-4 rounded-lg hover:bg-yellow-400 hover:text-gray-900 transition duration-300">
+                <h3 class="font-bold text-lg">${item.name}</h3>
+            </a>
+        `).join('');
+
+        container.innerHTML = `
+            <section>
+                <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">All Genres</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    ${allGenresHtml}
+                </div>
+            </section>
+        `;
+        showPage('genre-page');
+    };
+
+    const renderGenrePage = (genreName) => {
+        const filteredItems = dbData.allDonghua.filter(item => item.genres.map(g => g.toLowerCase()).includes(genreName.toLowerCase()));
+        const container = document.getElementById('genre-page-content');
+        if (!container) return;
         
-        e.preventDefault();
-        const pageId = link.dataset.page;
-        const donghuaId = link.dataset.id ? parseInt(link.dataset.id) : null;
-        const episodeNumber = link.dataset.episode ? parseInt(link.dataset.episode) : null;
+        const itemsGridHtml = filteredItems.length > 0 
+            ? filteredItems.map(item => createDonghuaCard(item)).join('') 
+            : `<p class="col-span-full text-center text-gray-400 py-10">No items found for the genre \"${genreName}\".</p>`;
 
-        if (pageId === 'detail-page' && donghuaId !== null) {
-            renderDetailPage(donghuaId);
-        } else if (pageId === 'player-page' && donghuaId !== null && episodeNumber !== null) {
-            renderPlayerPage(donghuaId, episodeNumber);
-        } else {
-            showPage(pageId);
+        container.innerHTML = `
+            <section>
+                <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+                    <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4">Genre: ${genreName}</h2>
+                    <button data-page="genre-page" class="bg-gray-700 text-white font-bold py-2 px-4 rounded hover:bg-gray-600"><i class="fa fa-arrow-left mr-2"></i>All Genres</button>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                    ${itemsGridHtml}
+                </div>
+            </section>
+        `;
+        showPage('genre-page');
+    };
+
+    // The main event listener for all dynamic content
+    document.body.addEventListener('click', (e) => {
+        const navLink = e.target.closest('a[data-page], button[data-page]');
+        const episodeTab = e.target.closest('.episode-range-tab');
+
+        if (episodeTab) {
+            e.preventDefault();
+            const container = episodeTab.closest('.episode-selector-container');
+            if (!container) return;
+
+            // Deactivate all tabs
+            container.querySelectorAll('.episode-range-tab').forEach(t => {
+                t.classList.remove('text-yellow-400', 'border-b-2', 'border-yellow-400');
+                t.classList.add('text-gray-400', 'hover:text-yellow-300');
+            });
+            // Hide all grids
+            container.querySelectorAll('.episode-grid').forEach(g => {
+                g.classList.add('hidden');
+            });
+
+            // Activate clicked tab and its grid
+            episodeTab.classList.add('text-yellow-400', 'border-b-2', 'border-yellow-400');
+            episodeTab.classList.remove('text-gray-400', 'hover:text-yellow-300');
+            const start = episodeTab.dataset.rangeStart;
+            const gridToShow = container.querySelector(`.episode-grid[data-grid-range-start="${start}"]`);
+            if (gridToShow) {
+                gridToShow.classList.remove('hidden');
+            }
+        } else if (navLink) {
+            e.preventDefault();
+            const pageId = navLink.dataset.page;
+            const donghuaId = navLink.dataset.id ? parseInt(navLink.dataset.id) : null;
+            const episodeNumber = navLink.dataset.episode ? parseInt(navLink.dataset.episode) : null;
+            const genreName = navLink.dataset.genre;
+
+            if (pageId === 'detail-page' && donghuaId !== null) {
+                renderDetailPage(donghuaId);
+            } else if (pageId === 'player-page' && donghuaId !== null && episodeNumber !== null) {
+                renderPlayerPage(donghuaId, episodeNumber);
+            } else if (pageId === 'genre-page') {
+                if (genreName) {
+                    renderGenrePage(genreName);
+                } else {
+                    renderAllGenresPage();
+                }
+            } else {
+                showPage(pageId);
+            }
         }
     });
 

@@ -2,3 +2,7 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.slider-item {
+    transition: opacity 0.5s ease-in-out;
+}
