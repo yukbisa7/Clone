@@ -376,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = `
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="md:w-1/3 flex-shrink-0">
-                    <img src="${item.poster}" alt="${item.title}" class="w-full h-72 object-cover rounded-lg shadow-lg">
+                    <!-- === BARIS YANG DIUBAH UNTUK UKURAN RESPONSIVE === -->
+                    <img src="${item.poster}" alt="${item.title}" class="w-2/3 mx-auto md:w-full md:mx-0 aspect-[2/3] object-cover rounded-lg shadow-lg">
                 </div>
                 <div class="md:w-2/3">
                     <h2 class="text-4xl font-bold text-yellow-400 mb-2">${item.title}</h2>
