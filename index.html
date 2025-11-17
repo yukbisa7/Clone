@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DonghuaFast - Watch Donghua Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-900 text-white">
+
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-yellow-400">DonghuaFast</a>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#" class="hover:text-yellow-400">Home</a>
+                <a href="#" class="hover:text-yellow-400">Donghua</a>
+                <a href="#" class="hover:text-yellow-400">Movie</a>
+                <a href="#" class="hover:text-yellow-400">Genre</a>
+                <a href="#" class="hover:text-yellow-400">Schedule</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div id="search-container" class="relative">
+                    <button id="search-btn" class="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-white text-lg">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    <div id="search-popup" class="absolute right-0 top-full mt-2 hidden bg-gray-800 p-2 rounded-lg shadow-lg z-10">
+                         <input id="search-input" type="text" placeholder="Search..." class="bg-gray-700 text-white rounded-md py-2 px-4 w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    </div>
+                </div>
+                <button id="menu-btn" class="md:hidden text-2xl">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+        </div>
+         <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-800">
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-700">Home</a>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-700">Donghua</a>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-700">Movie</a>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-700">Genre</a>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-700">Schedule</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="mb-12">
+            <div class="bg-cover bg-center h-64 sm:h-80 lg:h-96 rounded-lg shadow-xl" style="background-image: url('https://picsum.photos/1200/400')">
+                <div class="bg-black bg-opacity-50 h-full flex flex-col justify-end p-6 md:p-8 rounded-lg">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Featured Donghua Title</h1>
+                    <p class="text-base md:text-lg max-w-2xl">This is a short description of the featured show. It's exciting, action-packed, and you should watch it right now.</p>
+                    <a href="#" class="mt-4 bg-yellow-400 text-gray-900 font-bold py-2 px-6 rounded-lg w-max hover:bg-yellow-500 transition duration-300">Watch Now</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Anime List -->
+            <div class="flex-grow">
+                <!-- Latest Episode Section -->
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Latest Episode</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <!-- Anime Card -->
+                        <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=1" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Battle Through The Heavens</h3>
+                                <p class="text-xs text-gray-400">Episode 120</p>
+                            </div>
+                        </div>
+                        <!-- Repeat Card ... -->
+                        <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=2" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Perfect World</h3>
+                                <p class="text-xs text-gray-400">Episode 156</p>
+                            </div>
+                        </div>
+                        <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=3" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Soul Land</h3>
+                                <p class="text-xs text-gray-400">Episode 263</p>
+                            </div>
+                        </div>
+                        <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=4" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Apotheosis</h3>
+                                <p class="text-xs text-gray-400">Episode 78</p>
+                            </div>
+                        </div>
+                         <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=5" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Martial Universe</h3>
+                                <p class="text-xs text-gray-400">Episode 45</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                 <!-- Popular Section -->
+                <section class="mb-12">
+                    <h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">Popular Donghua</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                         <!-- Repeat Cards ... -->
+                         <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=6" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Throne of Seal</h3>
+                                <p class="text-xs text-gray-400">102 Episodes</p>
+                            </div>
+                        </div>
+                         <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=7" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Swallowed Star</h3>
+                                <p class="text-xs text-gray-400">98 Episodes</p>
+                            </div>
+                        </div>
+                         <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=8" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Renegade Immortal</h3>
+                                <p class="text-xs text-gray-400">34 Episodes</p>
+                            </div>
+                        </div>
+                         <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=9" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">Against the Gods</h3>
+                                <p class="text-xs text-gray-400">67 Episodes</p>
+                            </div>
+                        </div>
+                         <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+                            <img src="https://picsum.photos/200/300?random=10" alt="Anime Poster" class="w-full h-56 object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                <h3 class="font-bold text-sm truncate">The Great Ruler</h3>
+                                <p class="text-xs text-gray-400">52 Episodes</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="lg:w-1/4 lg:flex-shrink-0">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold border-l-4 border-yellow-400 pl-4 mb-4">Popular</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center space-x-4 hover:bg-gray-700 p-2 rounded">
+                            <img src="https://picsum.photos/50/70?random=1" alt="" class="w-12 h-16 object-cover rounded">
+                            <div>
+                                <a href="#" class="font-semibold text-sm">Battle Through The Heavens</a>
+                                <p class="text-xs text-gray-400">TV Series</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center space-x-4 hover:bg-gray-700 p-2 rounded">
+                            <img src="https://picsum.photos/50/70?random=2" alt="" class="w-12 h-16 object-cover rounded">
+                            <div>
+                                <a href="#" class="font-semibold text-sm">Perfect World</a>
+                                <p class="text-xs text-gray-400">TV Series</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center space-x-4 hover:bg-gray-700 p-2 rounded">
+                            <img src="https://picsum.photos/50/70?random=3" alt="" class="w-12 h-16 object-cover rounded">
+                            <div>
+                                <a href="#" class="font-semibold text-sm">Soul Land</a>
+                                <p class="text-xs text-gray-400">TV Series</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg mt-8">
+                    <h3 class="text-xl font-bold border-l-4 border-yellow-400 pl-4 mb-4">Genres</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="#" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">Action</a>
+                        <a href="#" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">Adventure</a>
+                        <a href="#" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">Fantasy</a>
+                        <a href="#" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">Martial Arts</a>
+                        <a href="#" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">Romance</a>
+                        <a href="#" class="bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">Cultivation</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-12 py-8 border-t border-gray-700">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2024 DonghuaFast. All rights reserved.</p>
+            <p class="text-sm mt-2">This site does not store any files on its server. All contents are provided by non-affiliated third parties.</p>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-y-2 sm:gap-x-6 mt-4">
+                <a href="#" class="hover:text-yellow-400">Privacy Policy</a>
+                <a href="#" class="hover:text-yellow-400">Terms of Service</a>
+                <a href="#" class="hover:text-yellow-400">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
