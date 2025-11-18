@@ -117,12 +117,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Memuat Konten ---
     const loadContent = async () => {
         try {
-            const response = await fetch('./db.json');
-            if (!response.ok) throw new Error('Network response was not ok');
-            dbData = await response.json();
-            dbData.allDonghua.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            const localData = localStorage.getItem('donghuaDB');
+            if (localData) {
+                console.log('Main site loading data from localStorage.');
+                dbData = JSON.parse(localData);
+            } else {
+                console.log('Main site fetching initial data from db.json.');
+                const response = await fetch('./db.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                dbData = await response.json();
+                localStorage.setItem('donghuaDB', JSON.stringify(dbData)); // Sync to localStorage on first load
+            }
+
+            if (dbData.allDonghua) {
+                 dbData.allDonghua.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            }
             populateAllContent();
-        } catch (error) { console.error('Failed to load content:', error); }
+        } catch (error) { 
+            console.error('Failed to load content:', error); 
+        }
     };
     
     const populateAllContent = () => {
