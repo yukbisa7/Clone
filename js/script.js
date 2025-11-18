@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="absolute bottom-0 left-0 p-4 md:p-8">
                     <h2 class="text-2xl md:text-4xl font-bold mb-2">${item.title}</h2>
                     <p class="text-gray-300 md:text-lg hidden md:block max-w-2xl line-clamp-2">${item.synopsis}</p>
-                    <a href="/${item.slug}" class="nav-link mt-4 inline-block bg-yellow-400 text-gray-900 font-bold py-2 px-5 rounded-lg hover:bg-yellow-500">Watch Now</a>
+                    <a href="${(item.episodes && item.episodes.length > 0) ? `/${item.slug}/${item.episodes[0].slug}` : `/${item.slug}`}" class="nav-link mt-4 inline-block bg-yellow-400 text-gray-900 font-bold py-2 px-5 rounded-lg hover:bg-yellow-500">Watch Now</a>
                 </div>
             </div>`).join('');
         let currentIndex = 0;
