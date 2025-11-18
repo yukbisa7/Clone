@@ -1,8 +1,12 @@
 // =================================================================================
-// DONGHUAFAST SCRIPT - GABUNGAN FINAL (ROUTING BARU + LOGIKA KONTEN ANDA YANG SUDAH LENGKAP)
+// DONGHUAFAST SCRIPT - GABUNGAN FINAL (FIXED FOR GITHUB PAGES SUBDIRECTORY)
 // =================================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- KONFIGURASI ---
+    // Ubah ini agar sesuai dengan nama repositori Anda di GitHub Pages.
+    // Jika URL Anda adalah 'username.github.io/MyWebsite/', maka basePath adalah '/MyWebsite'.
+    const basePath = '/Clone'; 
     let dbData = {};
 
     // --- Search functionality ---
@@ -59,7 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const router = () => {
-        const path = window.location.pathname; // Use path for routing
+        // MODIFIKASI: Dapatkan path dan hapus basePath dari awal string
+        let path = window.location.pathname;
+        if (path.startsWith(basePath)) {
+            path = path.substring(basePath.length);
+        }
+        // Jika path kosong setelah menghapus basePath, anggap itu root ('/')
+        if (path === '') {
+            path = '/';
+        }
+
         const segments = path.split('/').filter(Boolean);
 
         // Static routes
@@ -124,6 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Memuat Konten ---
     const loadContent = async () => {
         try {
+            // MODIFIKASI: Pastikan path ke db.json benar relatif terhadap index.html
+            // Jika db.json berada di folder yang sama dengan index.html, './db.json' sudah benar.
             const response = await fetch('./db.json');
             if (!response.ok) throw new Error('Network response was not ok');
             dbData = await response.json();
@@ -143,7 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         populateMoviePage(dbData.allDonghua.filter(item => item.type === 'Movie'));
     };
     
-    // --- Semua Fungsi 'populate' dan 'render' LENGKAP ---
+    // --- Semua Fungsi 'populate' dan 'render' LENGKAP (TIDAK ADA PERUBAHAN DI SINI) ---
+    // Catatan: Semua href di dalam fungsi-fungsi ini HARUS tetap dimulai dengan '/'
+    // contoh: <a href="/${item.slug}" ...>
     const createDonghuaCard = (item) => {
         let typeTagHtml = '';
         if (item.type === 'TV Series' && item.episodes && item.episodes.length > 0) {
@@ -309,16 +326,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Intercept clicks on nav-links to use history.pushState
+    // MODIFIKASI: Intercept clicks on nav-links untuk menggunakan history.pushState dengan basePath
     document.body.addEventListener('click', e => {
         const navLink = e.target.closest('.nav-link');
         if (navLink) {
             const href = navLink.getAttribute('href');
-            // Make sure it's an internal link (starts with /) and not an external one
+            // Pastikan ini adalah tautan internal (dimulai dengan /) dan bukan tautan eksternal
             if (href && href.startsWith('/')) { 
                 e.preventDefault();
-                if (window.location.pathname !== href) {
-                    history.pushState({}, '', href);
+                const fullPath = basePath + href;
+                // Hanya push state jika path-nya berbeda untuk menghindari entri duplikat
+                if (window.location.pathname !== fullPath) {
+                    history.pushState({}, '', fullPath);
                     router();
                 }
             }
@@ -329,6 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Inisialisasi ---
     loadContent().then(() => {
-        router();
+        router(); // Panggil router setelah konten dimuat
     });
 });
