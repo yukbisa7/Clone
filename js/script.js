@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let dbData = {};
 
-    // --- Search functionality (dari kode lama Anda) ---
+    // --- Search functionality ---
     const searchBtn = document.getElementById('search-btn');
     const searchInput = document.getElementById('search-input');
     const searchPopup = document.getElementById('search-popup');
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             searchResultsContainer.innerHTML = '<p class="text-gray-400 p-2 text-center">No results found.</p>'; return;
         }
         searchResultsContainer.innerHTML = results.map(item => `
-            <a href="#/${item.slug}" class="nav-link search-result-item flex items-center space-x-3 p-2 hover:bg-gray-700 rounded transition-colors duration-200 w-full">
+            <a href="/${item.slug}" class="nav-link search-result-item flex items-center space-x-3 p-2 hover:bg-gray-700 rounded transition-colors duration-200 w-full">
                 <img src="${item.poster}" alt="${item.title}" class="w-10 h-14 object-cover rounded">
                 <div><p class="font-semibold text-sm line-clamp-2">${item.title}</p><p class="text-xs text-gray-400">${item.type}</p></div>
             </a>`).join('');
@@ -59,11 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const router = () => {
-        const path = window.location.hash.substring(1) || '/'; // Use hash for routing
-        const segments = path.split('/').filter(Boolean); // e.g., /a/b -> ['a', 'b']
+        const path = window.location.pathname; // Use path for routing
+        const segments = path.split('/').filter(Boolean);
 
         // Static routes
-        if (path === '/') { // Home page
+        if (path === '/') {
             showPage('home-page');
             return;
         }
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showPage('home-page');
     };
 
-    // --- Memuat Konten (Versi aman tanpa localStorage) ---
+    // --- Memuat Konten ---
     const loadContent = async () => {
         try {
             const response = await fetch('./db.json');
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (item.type === 'Movie') {
             typeTagHtml = `<div class="absolute top-2 right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-md">Movie</div>`;
         }
-        return `<a href="#/${item.slug}" class="nav-link block relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
+        return `<a href="/${item.slug}" class="nav-link block relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition duration-300">
                 <img src="${item.poster}" alt="${item.title}" class="w-full h-36 md:h-48 object-cover">
                 ${typeTagHtml}
                 <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
@@ -176,14 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <li class="flex items-center space-x-4 hover:bg-gray-700 p-2 rounded">
                 <img src="${item.poster}" alt="${item.title}" class="w-12 h-16 object-cover rounded">
                 <div>
-                    <a href="#/${item.slug}" class="nav-link font-semibold text-sm hover:text-yellow-400">${item.title}</a>
+                    <a href="/${item.slug}" class="nav-link font-semibold text-sm hover:text-yellow-400">${item.title}</a>
                     <p class="text-xs text-gray-400">${item.type} <span class="text-yellow-400"><i class="fa fa-star fa-xs"></i> ${item.rating || 'N/A'}</span></p>
                 </div>
             </li>`).join('');
     };
     const populateGenres = (items) => {
         const container = document.getElementById('genres-list');
-        if (container) container.innerHTML = items.map(item => `<a href="#/genre/${encodeURIComponent(item.name.toLowerCase())}" class="nav-link bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">${item.name}</a>`).join('');
+        if (container) container.innerHTML = items.map(item => `<a href="/genre/${encodeURIComponent(item.name.toLowerCase())}" class="nav-link bg-gray-700 text-xs py-1 px-3 rounded-full hover:bg-yellow-400 hover:text-gray-900">${item.name}</a>`).join('');
     };
     const populateDonghuaPage = (items) => {
         const container = document.getElementById('donghua-grid');
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="absolute bottom-0 left-0 p-4 md:p-8">
                     <h2 class="text-2xl md:text-4xl font-bold mb-2">${item.title}</h2>
                     <p class="text-gray-300 md:text-lg hidden md:block max-w-2xl line-clamp-2">${item.synopsis}</p>
-                    <a href="${(item.episodes && item.episodes.length > 0) ? `/#/${item.slug}/${item.episodes[0].slug}` : `/#/${item.slug}`}" class="nav-link mt-4 inline-block bg-yellow-400 text-gray-900 font-bold py-2 px-5 rounded-lg hover:bg-yellow-500">Watch Now</a>
+                    <a href="${(item.episodes && item.episodes.length > 0) ? `/${item.slug}/${item.episodes[0].slug}` : `/${item.slug}`}" class="nav-link mt-4 inline-block bg-yellow-400 text-gray-900 font-bold py-2 px-5 rounded-lg hover:bg-yellow-500">Watch Now</a>
                 </div>
             </div>`).join('');
         let currentIndex = 0;
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 html += items.map(item => {
                     const donghua = allDonghua.find(d => d.id === item.donghuaId);
                     if (!donghua) return '';
-                    return `<a href="#/${donghua.slug}" class="nav-link flex items-center bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300">
+                    return `<a href="/${donghua.slug}" class="nav-link flex items-center bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300">
                             <img src="${donghua.poster}" alt="${donghua.title}" class="w-16 h-24 object-cover rounded-md mr-4">
                             <div class="flex-grow"><h4 class="font-bold text-lg">${donghua.title}</h4><p class="text-yellow-400 font-semibold">${item.time}</p></div>
                         </a>`;
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (episodesInRange.length > 0) {
                 const isActive = start === activeRangeStart;
                 rangeTabsHtml += `<button data-range-start="${start}" class="episode-range-tab px-3 py-2 text-sm font-semibold whitespace-nowrap ${isActive ? 'text-yellow-400 border-b-2 border-yellow-400' : 'text-gray-400 hover:text-yellow-300'}">${start}-${end}</button>`;
-                const gridItems = episodesInRange.map(ep => `<a href="#/${item.slug}/${ep.slug}" class="nav-link flex items-center justify-center p-2 h-10 rounded-md transition duration-200 text-center text-sm ${ep.slug === currentEpisodeSlug ? 'bg-yellow-400 text-gray-900 font-bold' : 'bg-gray-700 hover:bg-yellow-500 hover:text-gray-900'}">${ep.number}</a>`).join('');
+                const gridItems = episodesInRange.map(ep => `<a href="/${item.slug}/${ep.slug}" class="nav-link flex items-center justify-center p-2 h-10 rounded-md transition duration-200 text-center text-sm ${ep.slug === currentEpisodeSlug ? 'bg-yellow-400 text-gray-900 font-bold' : 'bg-gray-700 hover:bg-yellow-500 hover:text-gray-900'}">${ep.number}</a>`).join('');
                 episodeGridsHtml += `<div data-grid-range-start="${start}" class="episode-grid grid grid-cols-4 sm:grid-cols-5 gap-2 ${isActive ? '' : 'hidden'}">${gridItems}</div>`;
             }
         }
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderAllGenresPage = () => {
         const container = document.getElementById('genre-page-content');
         if (!container) return;
-        container.innerHTML = `<section><h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">All Genres</h2><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">${dbData.genres.map(item => `<a href="#/genre/${encodeURIComponent(item.name.toLowerCase())}" class="nav-link block text-center bg-gray-800 p-4 rounded-lg hover:bg-yellow-400 hover:text-gray-900 transition duration-300"><h3 class="font-bold text-lg">${item.name}</h3></a>`).join('')}</div></section>`;
+        container.innerHTML = `<section><h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4 mb-6">All Genres</h2><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">${dbData.genres.map(item => `<a href="/genre/${encodeURIComponent(item.name.toLowerCase())}" class="nav-link block text-center bg-gray-800 p-4 rounded-lg hover:bg-yellow-400 hover:text-gray-900 transition duration-300"><h3 class="font-bold text-lg">${item.name}</h3></a>`).join('')}</div></section>`;
         showPage('genre-page');
     };
     const renderGenrePage = (genreName) => {
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container) return;
         const filteredItems = dbData.allDonghua.filter(item => item.genres.map(g => g.toLowerCase()).includes(genreName.toLowerCase()));
         const itemsGridHtml = filteredItems.length > 0 ? filteredItems.map(item => createDonghuaCard(item)).join('') : `<p class="col-span-full text-center text-gray-400 py-10">No items found for the genre "${genreName}".</p>`;
-        container.innerHTML = `<section><div class="flex items-center justify-between flex-wrap gap-4 mb-6"><h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4">Genre: ${genreName}</h2><a href="#/genre" class="nav-link bg-gray-700 text-white font-bold py-2 px-4 rounded hover:bg-gray-600"><i class="fa fa-arrow-left mr-2"></i>All Genres</a></div><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">${itemsGridHtml}</div></section>`;
+        container.innerHTML = `<section><div class="flex items-center justify-between flex-wrap gap-4 mb-6"><h2 class="text-2xl font-bold border-l-4 border-yellow-400 pl-4">Genre: ${genreName}</h2><a href="/genre" class="nav-link bg-gray-700 text-white font-bold py-2 px-4 rounded hover:bg-gray-600"><i class="fa fa-arrow-left mr-2"></i>All Genres</a></div><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">${itemsGridHtml}</div></section>`;
         showPage('genre-page');
     };
 
@@ -308,7 +308,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gridToShow) gridToShow.classList.remove('hidden');
         }
     });
-    window.addEventListener('hashchange', router);
+    
+    // Intercept clicks on nav-links to use history.pushState
+    document.body.addEventListener('click', e => {
+        const navLink = e.target.closest('.nav-link');
+        if (navLink) {
+            const href = navLink.getAttribute('href');
+            // Make sure it's an internal link (starts with /) and not an external one
+            if (href && href.startsWith('/')) { 
+                e.preventDefault();
+                if (window.location.pathname !== href) {
+                    history.pushState({}, '', href);
+                    router();
+                }
+            }
+        }
+    });
+
+    window.addEventListener('popstate', router);
     
     // --- Inisialisasi ---
     loadContent().then(() => {
