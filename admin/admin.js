@@ -17,6 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const scheduleList = document.getElementById('schedule-list');
     const resetDataBtn = document.getElementById('reset-data-btn');
 
+    // Helper to create URL-friendly slugs
+    const createSlug = (text) => {
+        if (!text) return '';
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')           // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+            .replace(/^-+/, '')             // Trim - from start of text
+            .replace(/-+$/, '');            // Trim - from end of text
+    };
+
     // Tab switching logic
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -88,9 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ADD ANIME
     addAnimeForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        const title = e.target.title.value;
         const newAnime = {
             id: Date.now(),
-            title: e.target.title.value,
+            slug: createSlug(title),
+            title: title,
             poster: e.target.poster.value || `https://picsum.photos/200/300?random=${Date.now()}`,
             synopsis: e.target.synopsis.value,
             genres: e.target.genres.value.split(',').map(g => g.trim()),
@@ -117,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const newEpisode = {
             number: parseInt(e.target.number.value),
             title: e.target.title.value,
+            slug: createSlug(`episode ${e.target.number.value} ${e.target.title.value}`),
             url: e.target.url.value
         };
 
@@ -168,9 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (donghuaIndex === -1) return alert('Anime not found.');
 
         const donghua = dbData.allDonghua[donghuaIndex];
+        const title = e.target.title.value;
         const updatedDonghua = {
             ...donghua, // preserve episodes and original ID
-            title: e.target.title.value,
+            slug: createSlug(title),
+            title: title,
             poster: e.target.poster.value,
             synopsis: e.target.synopsis.value,
             genres: e.target.genres.value.split(',').map(g => g.trim()),
@@ -267,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const updatedEpisode = {
             number: parseInt(e.target.number.value),
             title: e.target.title.value,
+            slug: createSlug(`episode ${e.target.number.value} ${e.target.title.value}`),
             url: e.target.url.value
         };
 
