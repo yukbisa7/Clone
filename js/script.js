@@ -1,11 +1,11 @@
 // =================================================================================
-// DONGHUAFAST SCRIPT - GABUNGAN FINAL (FIXED FOR GITHUB PAGES SUBDIRECTORY)
+// DONGHUAFAST SCRIPT - GABUNGAN FINAL (PERBAIKAN ROUTING + SLIDER)
 // =================================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- KONFIGURASI ---
-    // Ubah ini agar sesuai dengan nama repositori Anda di GitHub Pages.
-    // Jika URL Anda adalah 'username.github.io/MyWebsite/', maka basePath adalah '/MyWebsite'.
+    // PERBAIKAN #1: Mendefinisikan path dasar untuk GitHub Pages.
+    // Ini memastikan URL seperti /Clone/donghua terbentuk dengan benar.
     const basePath = '/Clone'; 
     let dbData = {};
 
@@ -63,12 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const router = () => {
-        // MODIFIKASI: Dapatkan path dan hapus basePath dari awal string
+        // PERBAIKAN #1: Sesuaikan path dengan basePath
         let path = window.location.pathname;
         if (path.startsWith(basePath)) {
             path = path.substring(basePath.length);
         }
-        // Jika path kosong setelah menghapus basePath, anggap itu root ('/')
         if (path === '') {
             path = '/';
         }
@@ -76,35 +75,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const segments = path.split('/').filter(Boolean);
 
         // Static routes
-        if (path === '/') {
-            showPage('home-page');
-            return;
-        }
-        if (path === '/donghua') {
-            showPage('donghua-page');
-            return;
-        }
-        if (path === '/movie') {
-            showPage('movie-page');
-            return;
-        }
-        if (path === '/schedule') {
-            showPage('schedule-page');
-            return;
-        }
+        if (path === '/') { showPage('home-page'); return; }
+        if (path === '/donghua') { showPage('donghua-page'); return; }
+        if (path === '/movie') { showPage('movie-page'); return; }
+        if (path === '/schedule') { showPage('schedule-page'); return; }
 
-        // Genre route (has a prefix)
+        // Genre route
         if (segments[0] === 'genre') {
-            if (segments.length > 1) { // /genre/action
-                const genreName = decodeURIComponent(segments[1]);
-                renderGenrePage(genreName);
-            } else { // /genre
+            if (segments.length > 1) {
+                renderGenrePage(decodeURIComponent(segments[1]));
+            } else {
                 renderAllGenresPage();
             }
             return;
         }
 
-        // Dynamic routes (must have dbData loaded)
+        // Dynamic routes
         if (!dbData.allDonghua) return;
 
         // Player page: /:donghuaSlug/:episodeSlug
@@ -113,10 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = dbData.allDonghua.find(d => d.slug === donghuaSlug);
             if (item && item.episodes) {
                 const episode = item.episodes.find(ep => ep.slug === episodeSlug);
-                if (episode) {
-                    renderPlayerPage(item, episode);
-                    return;
-                }
+                if (episode) { renderPlayerPage(item, episode); return; }
             }
         }
         
@@ -124,21 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (segments.length === 1) {
             const [donghuaSlug] = segments;
             const item = dbData.allDonghua.find(d => d.slug === donghuaSlug);
-            if (item) {
-                renderDetailPage(item);
-                return;
-            }
+            if (item) { renderDetailPage(item); return; }
         }
 
-        // Fallback for unmatched routes
+        // Fallback
         showPage('home-page');
     };
 
     // --- Memuat Konten ---
     const loadContent = async () => {
         try {
-            // MODIFIKASI: Pastikan path ke db.json benar relatif terhadap index.html
-            // Jika db.json berada di folder yang sama dengan index.html, './db.json' sudah benar.
             const response = await fetch('./db.json');
             if (!response.ok) throw new Error('Network response was not ok');
             dbData = await response.json();
@@ -158,9 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         populateMoviePage(dbData.allDonghua.filter(item => item.type === 'Movie'));
     };
     
-    // --- Semua Fungsi 'populate' dan 'render' LENGKAP (TIDAK ADA PERUBAHAN DI SINI) ---
-    // Catatan: Semua href di dalam fungsi-fungsi ini HARUS tetap dimulai dengan '/'
-    // contoh: <a href="/${item.slug}" ...>
+    // --- Semua Fungsi 'populate' dan 'render' ---
     const createDonghuaCard = (item) => {
         let typeTagHtml = '';
         if (item.type === 'TV Series' && item.episodes && item.episodes.length > 0) {
@@ -210,12 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('movie-grid');
         if (container) container.innerHTML = items.map(item => createDonghuaCard(item)).join('');
     };
+
+    // PERBAIKAN #2: Fungsi slider yang sudah disempurnakan
     const populatePopularSlider = (items) => {
         const slider = document.getElementById('popular-slider');
         const prevBtn = document.getElementById('slider-prev');
         const nextBtn = document.getElementById('slider-next');
         if (!slider || !prevBtn || !nextBtn || items.length === 0) return;
-        slider.innerHTML = items.map((item, index) => `<div class="slider-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0'}">
+
+        slider.innerHTML = items.map((item, index) => 
+            `<div class="slider-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}">
                 <img src="${item.poster}" class="w-full h-full object-cover" alt="${item.title}">
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-4 md:p-8">
@@ -223,22 +203,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-gray-300 md:text-lg hidden md:block max-w-2xl line-clamp-2">${item.synopsis}</p>
                     <a href="${(item.episodes && item.episodes.length > 0) ? `/${item.slug}/${item.episodes[0].slug}` : `/${item.slug}`}" class="nav-link mt-4 inline-block bg-yellow-400 text-gray-900 font-bold py-2 px-5 rounded-lg hover:bg-yellow-500">Watch Now</a>
                 </div>
-            </div>`).join('');
+            </div>`
+        ).join('');
+
         let currentIndex = 0;
         const slides = slider.querySelectorAll('.slider-item');
         const slideCount = slides.length;
+
         const showSlide = (index) => {
             slides.forEach((slide, i) => {
-                slide.classList.toggle('opacity-100', i === index);
-                slide.classList.toggle('opacity-0', i !== index);
+                const isActive = (i === index);
+                slide.classList.toggle('opacity-100', isActive);
+                slide.classList.toggle('opacity-0', !isActive);
+                // Tambahkan/hapus 'pointer-events-none' agar slide yang tidak aktif tidak bisa diklik.
+                slide.classList.toggle('pointer-events-none', !isActive);
             });
         };
+
         const next = () => { currentIndex = (currentIndex + 1) % slideCount; showSlide(currentIndex); };
         const prev = () => { currentIndex = (currentIndex - 1 + slideCount) % slideCount; showSlide(currentIndex); };
+        
         nextBtn.addEventListener('click', next);
         prevBtn.addEventListener('click', prev);
-        setInterval(next, 5000);
+        
+        if (slider.dataset.intervalId) {
+            clearInterval(parseInt(slider.dataset.intervalId));
+        }
+        const intervalId = setInterval(next, 5000);
+        slider.dataset.intervalId = intervalId;
     };
+
     const populateSchedulePage = (schedule, allDonghua) => {
         const container = document.getElementById('schedule-container');
         if (!container || !schedule) return;
@@ -326,16 +320,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // MODIFIKASI: Intercept clicks on nav-links untuk menggunakan history.pushState dengan basePath
+    // PERBAIKAN #1: Intercept klik dan tambahkan basePath
     document.body.addEventListener('click', e => {
         const navLink = e.target.closest('.nav-link');
         if (navLink) {
             const href = navLink.getAttribute('href');
-            // Pastikan ini adalah tautan internal (dimulai dengan /) dan bukan tautan eksternal
             if (href && href.startsWith('/')) { 
                 e.preventDefault();
                 const fullPath = basePath + href;
-                // Hanya push state jika path-nya berbeda untuk menghindari entri duplikat
                 if (window.location.pathname !== fullPath) {
                     history.pushState({}, '', fullPath);
                     router();
@@ -348,6 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Inisialisasi ---
     loadContent().then(() => {
-        router(); // Panggil router setelah konten dimuat
+        router();
     });
 });
